@@ -100,16 +100,7 @@ function onClientConnection(sock){
 		  break;
 		  case 'CHG':
 		    const uStatus = cleandata[2];
-			switch(uStatus) {
-				case 'NLN':
-				sendData('CHG', transaction, 'NLN 0');
-				//sendData('ADD', transaction, 'AL 28 fred@passport.com Fred 1');
-				break;
-				
-				default:
-				sendData('CHG', transaction, `${uStatus} 0`);
-				break;
-			}
+			sendData('CHG', transaction, `${uStatus} 0`);
 		  break;
 		  default:
 			// code block

@@ -1,4 +1,4 @@
-const host = '127.0.0.1';
+const host = '0.0.0.0';
 
 const httpServer = require('./http-server');
 const msnServer = require('./msn-server');

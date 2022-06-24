@@ -1,3 +1,4 @@
+const backend = require('./backend');
 const express = require('express');
 const https = require('https');
 const fs = require('fs');
@@ -19,17 +20,18 @@ app.get('/rdr/pprdr.asp', (req, res) => {
 })
 
 app.get('/login2.srf', (req, res) => {
-  console.log(req.headers.authorization);
   console.log("Tweener Nexus Login Request")
   res.set("PPServer", "H: LAWPPLOG5C006")
   res.set("P3P", 'CP="DSP CUR OTPi IND OTRi ONL FIN"')
   res.set("Authentication-Info", 'Passport1.4 da-status=redir')
-  res.redirect(302, 'https://login.passport.com/login2_alt.srf?lc=1033');
+  res.redirect(302, 'https://login.passport.com/login2_part2.srf?lc=1033');
   //res.end()
 })
 
-app.get('/login2_alt.srf', (req, res) => {
-  console.log(req.headers.authorization);
+app.get('/login2_part2.srf', (req, res) => {
+  var header1 = req.headers.authorization.split(/\s*,\s*/);
+  var pass = header1[3].split('=')[1]; // ass code
+  console.log(pass);
   console.log("Tweener Nexus Login Request 2")
   res.set("PPServer", "H: LAWPPIIS6B061")
   res.set("P3P", 'CP="DSP CUR OTPi IND OTRi ONL FIN"')

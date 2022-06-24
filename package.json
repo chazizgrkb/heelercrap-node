@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "express": "^4.18.1"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "name": "heelercrap",
+  "version": "1.0.0",
+  "description": "Chatting server much akin to Escargot",
+  "main": "server.js",
+  "devDependencies": {},
+  "keywords": [
+    "chat",
+    "chatting"
+  ],
+  "author": "grkb",
+  "license": "MIT"
+}

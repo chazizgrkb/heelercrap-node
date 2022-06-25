@@ -13,13 +13,13 @@ var options = {
 };
 
 app = express()
-app.get('/rdr/pprdr.asp', (req, res) => {
+app.get('/rdr/pprdr.asp', async (req, res) => {
   res.set("PassportURLs", "DALogin=login.passport.com/login2.srf")
   console.log("Tweener Nexus Request Start?")
   res.end()
 })
 
-app.get('/login2.srf', (req, res) => {
+app.get('/login2.srf', async (req, res) => {
   console.log("Tweener Nexus Login Request")
   res.set("PPServer", "H: LAWPPLOG5C006")
   res.set("P3P", 'CP="DSP CUR OTPi IND OTRi ONL FIN"')
@@ -28,13 +28,14 @@ app.get('/login2.srf', (req, res) => {
   //res.end()
 })
 
-app.get('/login2_part2.srf', (req, res) => {
+app.get('/login2_part2.srf', async (req, res) => {
   var header1 = req.headers.authorization.split(/\s*,\s*/);
+  var username = header1[2].split('=')[1].split('@')[0]; // ass code
   var pass = header1[3].split('=')[1]; // ass code
-  console.log(pass);
   console.log("Tweener Nexus Login Request 2")
   res.set("PPServer", "H: LAWPPIIS6B061")
   res.set("P3P", 'CP="DSP CUR OTPi IND OTRi ONL FIN"')
+  await backend.authenticate(username, pass)
   res.set("Authentication-Info", "Authentication-Info: Passport1.4 da-status=success,tname=MSPAuth,tname=MSPProf,tname=MSPSec,from-PP='t=53*1hAu8ADuD3TEwdXoOMi08sD*2!cMrntTwVMTjoB3p6stWTqzbkKZPVQzA5NOt19SLI60PY!b8K4YhC!Ooo5ug$$&p=5eKBBC!yBH6ex5mftp!a9DrSb0B3hU8aqAWpaPn07iCGBw5akemiWSd7t2ot!okPvIR!Wqk!MKvi1IMpxfhkao9wpxlMWYAZ!DqRfACmyQGG112Bp9xrk04!BVBUa9*H9mJLoWw39m63YQRE1yHnYNv08nyz43D3OnMcaCoeSaEHVM7LpR*LWDme29qq2X3j8N',ru=h")
   res.end()
 })

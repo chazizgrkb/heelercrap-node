@@ -17,14 +17,14 @@ var start = function(port,host) {
 }
 
 //Declare connection listener function
-function onClientConnection(sock){
-	var sendData = function(command, transaction, instructions){
+async function onClientConnection(sock){
+	var sendData = async function(command, transaction, instructions){
 		console.log(` Output: <<< ${command} ${transaction} ${instructions} `);
 		return sock.write(`${command} ${transaction} ${instructions}\r\n`);
 	}
 	
 	// why.
-	var sendDataNoTransaction = function(command){
+	var sendDataNoTransaction = async function(command){
 		console.log(` Output: <<< ${command}`);
 		return sock.write(`${command}\r\n`);
 	}
@@ -32,34 +32,34 @@ function onClientConnection(sock){
     //Log when a client connnects.
     console.log(`${sock.remoteAddress}:${sock.remotePort} Connected`);
      //Listen for data from the connected client.
-    sock.on('data',function(data){
+    sock.on('data',async function(data){
         //Log data from the client
         //console.log(`${sock.remoteAddress}:${sock.remotePort} Says : ${data} `);
 		const cleandata = split(data.toString());
 		const command = cleandata[0];
 		const transaction = cleandata[1];
-		console.log(` Input: >>> ${data} `);
+		console.log(`(${sock.remoteAddress}:${sock.remotePort}) Input: >>> ${data} `);
 		console.log(cleandata);
 		switch(command) {
 		  case 'VER':
 			global.msnp = cleandata[2];
-			sendData('VER', transaction, `${msnp} CVR0`);
+			await sendData('VER', transaction, `${msnp} CVR0`);
 			break;
 		  case 'CVR':
 			global.email = cleandata[9];
 			const version = cleandata[7];
-			sendData('CVR', transaction, `${version} ${version} 1.0.0000 https://www.youtube.com/watch?v=Xe7g_-XuMJw https://www.youtube.com/watch?v=Xe7g_-XuMJw`);
+			await sendData('CVR', transaction, `${version} ${version} 1.0.0000 https://www.youtube.com/watch?v=Xe7g_-XuMJw https://www.youtube.com/watch?v=Xe7g_-XuMJw`);
 			break;
 		  case 'USR':
 			const tweener = cleandata[3];
 			switch(tweener) {
 				case 'I':
-				sendData('USR', transaction, 'TWN S lc=1033,id=507,tw=40,fs=1,ru=http%3A%2F%2Fmessenger%2Emsn%2Ecom,ct=1062764229,kpp=1,kv=5,ver=2.1.0173.1,tpf=43f8a4c8ed940c04e3740be46c4d1619');
+				await sendData('USR', transaction, 'TWN S lc=1033,id=507,tw=40,fs=1,ru=http%3A%2F%2Fmessenger%2Emsn%2Ecom,ct=1062764229,kpp=1,kv=5,ver=2.1.0173.1,tpf=43f8a4c8ed940c04e3740be46c4d1619');
 				break;
 
 				case 'S':
-				sendData('USR', transaction, `OK ${email} ${email} 1 0`);
-				sendDataNoTransaction(`MSG Hotmail Hotmail 491\r\n
+				await sendData('USR', transaction, `OK ${email} ${email} 1 0`);
+				await sendDataNoTransaction(`MSG Hotmail Hotmail 491\r\n
    MIME-Version: 1.0\r\n
    Content-Type: text/x-msmsgsprofile; charset=UTF-8\r\n
    LoginTime: 1050223062\r\n
@@ -82,27 +82,26 @@ function onClientConnection(sock){
    MSPAuth: 41bbzZ*NzDmDQ8ic4HWo89b9zhCBk!ÃÂÃÂ¢ÃÂÃÂÃÂÃÂONDJKB3Los8UMgBnCOLSwQKo!8IeIHÃÂÃÂ¢ÃÂÃÂÃÂÃÂQF0vVItSlOzIL36e5MAdMaB3mpZw$$\r\n
    ClientIP: 1.2.3.4\r\n
    ClientPort: 516\r\n`);
-   backend.hello(`${email}`);
 				break;
 			}
 			break;
 		  case 'SYN':
 		    const syncVersion = cleandata[2];
 			if (syncVersion > 0) {
-			sendData('SYN', transaction, 1); // has to be exact or else it hangs.
+			await sendData('SYN', transaction, 1); // has to be exact or else it hangs.
 			} else {
-			sendData('SYN', transaction, '1 2 4'); // has to be exact or else it hangs.
-			sendDataNoTransaction('GTC A');
-			sendDataNoTransaction('BLP AL');
-			sendDataNoTransaction("LSG 0 Other%20Contacts 0\r\nLSG 1 Coworkers 0\r\nLSG 2 Friends 0\r\nLSG 3 Family 0");
-			sendDataNoTransaction("LST bob@passport.com Bob 1 0\r\nBPR MOB Y");
-			sendDataNoTransaction("LST fred@passport.com Fred 3 0");
+			await sendData('SYN', transaction, '1 2 4'); // has to be exact or else it hangs.
+			await sendDataNoTransaction('GTC A');
+			await sendDataNoTransaction('BLP AL');
+			await sendDataNoTransaction("LSG 0 Other%20Contacts 0\r\nLSG 1 Coworkers 0\r\nLSG 2 Friends 0\r\nLSG 3 Family 0");
+			await sendDataNoTransaction("LST bob@passport.com Bob 1 0\r\nBPR MOB Y");
+			await sendDataNoTransaction("LST fred@passport.com Fred 3 0");
 			//sendDataNoTransaction("LST gamerappa@heelercrap.com Gamerappa 3 0");
 			}
 		  break;
 		  case 'CHG':
 		    const uStatus = cleandata[2];
-			sendData('CHG', transaction, `${uStatus} 0`);
+			await sendData('CHG', transaction, `${uStatus} 0`);
 		  break;
 		  default:
 			// code block
